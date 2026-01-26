@@ -8,4 +8,7 @@ pub enum Error {
     AlreadyClaimed = 2,
     InvalidAmount = 3,
     Unauthorized = 4,
+    InvalidUnlockTime = 5,
+    GiftNotFound = 6,
+    TransferFailed = 7,
 }
