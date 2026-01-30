@@ -5,6 +5,7 @@ use soroban_sdk::{contracttype, Address, String};
 pub enum GiftStatus {
     Created = 0,
     Claimed = 1,
+    Withdrawn = 2,
 }
 
 #[contracttype]
@@ -24,4 +25,11 @@ pub struct Gift {
     pub unlock_timestamp: u64,
     pub recipient_phone_hash: String,
     pub status: GiftStatus,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PriceCache {
+    pub rate: i128,
+    pub timestamp: u64,
 }
