@@ -17,6 +17,10 @@ pub enum DataKey {
     NextGiftId,
     Gift(u64),
     PriceCache,
+    UsdcAddress,
+    TotalHeld,
+    TotalGifted,
+    TotalFees,
 }
 
 pub fn extend_instance_ttl(env: &Env) {
@@ -97,5 +101,43 @@ pub fn get_price_cache(env: &Env) -> Option<PriceCache> {
 
 pub fn set_price_cache(env: &Env, cache: &PriceCache) {
     env.storage().instance().set(&DataKey::PriceCache, cache);
+    extend_instance_ttl(env);
+}
+
+// USDC Token address
+pub fn get_usdc_address(env: &Env) -> Option<Address> {
+    env.storage().instance().get(&DataKey::UsdcAddress)
+}
+
+pub fn set_usdc_address(env: &Env, address: &Address) {
+    env.storage().instance().set(&DataKey::UsdcAddress, address);
+    extend_instance_ttl(env);
+}
+
+// Internal Balance Tracking
+pub fn get_total_held(env: &Env) -> i128 {
+    env.storage().instance().get(&DataKey::TotalHeld).unwrap_or(0)
+}
+
+pub fn set_total_held(env: &Env, amount: i128) {
+    env.storage().instance().set(&DataKey::TotalHeld, &amount);
+    extend_instance_ttl(env);
+}
+
+pub fn get_total_gifted(env: &Env) -> i128 {
+    env.storage().instance().get(&DataKey::TotalGifted).unwrap_or(0)
+}
+
+pub fn set_total_gifted(env: &Env, amount: i128) {
+    env.storage().instance().set(&DataKey::TotalGifted, &amount);
+    extend_instance_ttl(env);
+}
+
+pub fn get_total_fees(env: &Env) -> i128 {
+    env.storage().instance().get(&DataKey::TotalFees).unwrap_or(0)
+}
+
+pub fn set_total_fees(env: &Env, amount: i128) {
+    env.storage().instance().set(&DataKey::TotalFees, &amount);
     extend_instance_ttl(env);
 }

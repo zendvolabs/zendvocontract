@@ -9,6 +9,7 @@ mod oracle;
 mod path_payment;
 mod slippage;
 mod storage;
+mod token;
 mod test;
 pub mod types;
 

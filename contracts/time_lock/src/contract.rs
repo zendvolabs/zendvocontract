@@ -8,6 +8,7 @@ use crate::oracle::{self, OracleConfig};
 use crate::path_payment;
 use crate::slippage::{self, SlippageConfig};
 use crate::storage;
+use crate::token;
 use crate::types::{Gift, GiftStatus};
 use soroban_sdk::{
     contract, contractimpl, symbol_short, xdr::ToXdr, Address, Bytes, BytesN, Env, String,
@@ -26,6 +27,7 @@ impl TimeLockTrait for TimeLockContract {
         admin: Address,
         oracle_pk: BytesN<32>,
         oracle_address: Address,
+        usdc_address: Address,
     ) -> Result<(), Error> {
         if storage::has_admin(&env) {
             return Err(Error::Unauthorized);
@@ -39,6 +41,8 @@ impl TimeLockTrait for TimeLockContract {
 
         let slippage_config = slippage::default_slippage_config(admin);
         storage::set_slippage_config(&env, &slippage_config);
+
+        storage::set_usdc_address(&env, &usdc_address);
 
         Ok(())
     }
@@ -59,7 +63,7 @@ impl TimeLockTrait for TimeLockContract {
         let gift_id = storage::increment_next_gift_id(&env);
 
         let gift = Gift {
-            sender,
+            sender: sender.clone(),
             recipient: None,
             amount,
             unlock_timestamp,
@@ -68,6 +72,16 @@ impl TimeLockTrait for TimeLockContract {
         };
 
         storage::set_gift(&env, gift_id, &gift);
+
+        // Internal Tracking: Transfer USDC from sender to contract
+        let usdc_address = storage::get_usdc_address(&env).ok_or(Error::InvalidTokenAddress)?;
+        token::transfer_from(&env, &usdc_address, &sender, &env.current_contract_address(), amount)?;
+
+        // Update internal accounting
+        let total_held = storage::get_total_held(&env) + amount;
+        let total_gifted = storage::get_total_gifted(&env) + amount;
+        storage::set_total_held(&env, total_held);
+        storage::set_total_gifted(&env, total_gifted);
 
         Ok(gift_id)
     }
@@ -195,6 +209,17 @@ impl TimeLockTrait for TimeLockContract {
         gift.status = GiftStatus::Withdrawn;
         storage::set_gift(&env, gift_id, &gift);
 
+        // Internal Tracking: Collect Platform Fee
+        let total_fees = storage::get_total_fees(&env) + fee_amount;
+        storage::set_total_fees(&env, total_fees);
+
+        // Note: total_held doesn't change yet as the contract still holds the USDC
+        // until it's actually swapped/sent. 
+        // In this implementation, withdraw_to_bank simulates the swap.
+        // For strict tracking, we decrease total_held by the full gift amount.
+        let total_held = storage::get_total_held(&env) - gift.amount;
+        storage::set_total_held(&env, total_held);
+
         Ok(())
     }
 
@@ -298,5 +323,18 @@ impl TimeLockTrait for TimeLockContract {
 
     fn get_gift(env: Env, gift_id: u64) -> Result<Gift, Error> {
         storage::get_gift(&env, gift_id).ok_or(Error::GiftNotFound)
+    }
+
+    fn get_balance(env: Env, owner: Address) -> Result<i128, Error> {
+        let usdc_address = storage::get_usdc_address(&env).ok_or(Error::InvalidTokenAddress)?;
+        Ok(token::balance_of(&env, &usdc_address, &owner))
+    }
+
+    fn get_total_held(env: Env) -> Result<i128, Error> {
+        Ok(storage::get_total_held(&env))
+    }
+
+    fn get_total_fees(env: Env) -> Result<i128, Error> {
+        Ok(storage::get_total_fees(&env))
     }
 }

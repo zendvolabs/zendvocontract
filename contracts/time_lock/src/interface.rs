@@ -11,6 +11,7 @@ pub trait TimeLockTrait {
         admin: Address,
         oracle_pk: BytesN<32>,
         oracle_address: Address,
+        usdc_address: Address,
     ) -> Result<(), Error>;
 
     fn create_gift(
@@ -35,22 +36,16 @@ pub trait TimeLockTrait {
         anchor_address: Address,
     ) -> Result<(), Error>;
 
-    /// Set oracle address (admin only)
     fn set_oracle_address(env: Env, new_oracle_address: Address) -> Result<(), Error>;
 
-    /// Set maximum oracle data age (admin only)
     fn set_max_oracle_age(env: Env, max_age: u64) -> Result<(), Error>;
 
-    /// Management: Pause oracle checks (admin only)
     fn set_oracle_paused(env: Env, paused: bool) -> Result<(), Error>;
 
-    /// Set maximum slippage (admin only)
     fn set_max_slippage(env: Env, slippage_bps: u32) -> Result<(), Error>;
 
-    /// Query current exchange rate from cache or oracle
     fn check_exchange_rate(env: Env, currency_pair: String) -> Result<i128, Error>;
 
-    /// Validate slippage before transaction
     fn validate_slippage(env: Env, oracle_rate: i128, actual_rate: i128) -> Result<(), Error>;
 
     fn get_oracle_config(env: Env) -> Result<OracleConfig, Error>;
@@ -58,4 +53,13 @@ pub trait TimeLockTrait {
     fn get_slippage_config(env: Env) -> Result<SlippageConfig, Error>;
 
     fn get_gift(env: Env, gift_id: u64) -> Result<Gift, Error>;
+
+    /// SEP-41 Wrapper: Get USDC balance of an address
+    fn get_balance(env: Env, owner: Address) -> Result<i128, Error>;
+
+    /// Internal Tracking: Get total USDC held by contract
+    fn get_total_held(env: Env) -> Result<i128, Error>;
+
+    /// Internal Tracking: Get accumulated platform fees
+    fn get_total_fees(env: Env) -> Result<i128, Error>;
 }

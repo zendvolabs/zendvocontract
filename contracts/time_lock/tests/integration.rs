@@ -21,13 +21,25 @@ fn test_claim_gift() {
 
     let admin = Address::generate(&env);
     let oracle_address = Address::generate(&env);
-    client.initialize(&admin, &oracle_pk, &oracle_address);
+    
+    // Mock USDC Token
+    let usdc_admin = Address::generate(&env);
+    let usdc_address = env.register_stellar_asset_contract_v2(usdc_admin.clone()).address();
+    
+    client.initialize(&admin, &oracle_pk, &oracle_address, &usdc_address);
 
     let sender = Address::generate(&env);
     let recipient_phone_hash = String::from_str(&env, "phone_hash");
     let amount = 10_000_000;
-    let unlock_time = env.ledger().timestamp() + 100;
+    
+    // Distribute USDC to sender and approve contract
+    let usdc_client = soroban_sdk::token::StellarAssetClient::new(&env, &usdc_address);
+    usdc_client.mint(&sender, &amount);
+    
+    let usdc_token = soroban_sdk::token::Client::new(&env, &usdc_address);
+    usdc_token.approve(&sender, &contract_id, &amount, &(env.ledger().sequence() + 100));
 
+    let unlock_time = env.ledger().timestamp() + 100;
     let gift_id = client.create_gift(&sender, &amount, &unlock_time, &recipient_phone_hash);
 
     let claimant = Address::generate(&env);
@@ -59,10 +71,17 @@ fn test_withdraw_to_bank_success() {
 
     let contract_id = env.register(TimeLockContract, ());
     let client = TimeLockContractClient::new(&env, &contract_id);
-    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env));
+    
+    let usdc_address = env.register_stellar_asset_contract_v2(Address::generate(&env)).address();
+    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env), &usdc_address);
+
+    let sender = Address::generate(&env);
+    let amount = 10_000_000;
+    soroban_sdk::token::StellarAssetClient::new(&env, &usdc_address).mint(&sender, &amount);
+    soroban_sdk::token::Client::new(&env, &usdc_address).approve(&sender, &contract_id, &amount, &(env.ledger().sequence() + 100));
 
     let recipient_phone_hash = String::from_str(&env, "h");
-    let gift_id = client.create_gift(&Address::generate(&env), &10_000_000, &0, &recipient_phone_hash);
+    let gift_id = client.create_gift(&sender, &amount, &0, &recipient_phone_hash);
 
     let claimant = Address::generate(&env);
     let mut payload = Bytes::new(&env);
@@ -76,6 +95,10 @@ fn test_withdraw_to_bank_success() {
 
     let res = client.try_withdraw_to_bank(&gift_id, &String::from_str(&env, "memo"), &Address::generate(&env));
     assert!(res.is_ok());
+
+    // Verify internal tracking
+    assert_eq!(client.get_total_held(), 0);
+    assert!(client.get_total_fees() > 0);
 }
 
 #[test]
@@ -88,17 +111,19 @@ fn test_withdraw_to_bank_slippage_fail() {
     let oracle_pk = BytesN::from_array(&env, &oracle_keypair.verifying_key().to_bytes());
     let contract_id = env.register(TimeLockContract, ());
     let client = TimeLockContractClient::new(&env, &contract_id);
-    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env));
+    
+    let usdc_address = env.register_stellar_asset_contract_v2(Address::generate(&env)).address();
+    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env), &usdc_address);
 
-    // Actual rate is 0.99 (990,000). Oracle is 1.0 (1,000,000).
-    // Set max slippage to 0.5% (50 bps). 
-    // Min expected = 1.0 * (1 - 0.005) = 0.995.
-    // 0.99 < 0.995 -> Should fail.
     client.set_max_slippage(&50);
-    // Force slippage failure
+
+    let sender = Address::generate(&env);
+    let amount = 10_000_000;
+    soroban_sdk::token::StellarAssetClient::new(&env, &usdc_address).mint(&sender, &amount);
+    soroban_sdk::token::Client::new(&env, &usdc_address).approve(&sender, &contract_id, &amount, &(env.ledger().sequence() + 100));
 
     let recipient_phone_hash = String::from_str(&env, "h");
-    let gift_id = client.create_gift(&Address::generate(&env), &10_000_000, &0, &recipient_phone_hash);
+    let gift_id = client.create_gift(&sender, &amount, &0, &recipient_phone_hash);
     
     let claimant = Address::generate(&env);
     let mut payload = Bytes::new(&env);
@@ -123,11 +148,17 @@ fn test_withdraw_to_bank_insufficient_liquidity() {
     let oracle_pk = BytesN::from_array(&env, &oracle_keypair.verifying_key().to_bytes());
     let contract_id = env.register(TimeLockContract, ());
     let client = TimeLockContractClient::new(&env, &contract_id);
-    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env));
+    
+    let usdc_address = env.register_stellar_asset_contract_v2(Address::generate(&env)).address();
+    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env), &usdc_address);
 
+    let sender = Address::generate(&env);
     let amount = 200_000_000; 
+    soroban_sdk::token::StellarAssetClient::new(&env, &usdc_address).mint(&sender, &amount);
+    soroban_sdk::token::Client::new(&env, &usdc_address).approve(&sender, &contract_id, &amount, &(env.ledger().sequence() + 100));
+
     let recipient_phone_hash = String::from_str(&env, "h");
-    let gift_id = client.create_gift(&Address::generate(&env), &amount, &0, &recipient_phone_hash);
+    let gift_id = client.create_gift(&sender, &amount, &0, &recipient_phone_hash);
 
     let claimant = Address::generate(&env);
     let mut payload = Bytes::new(&env);
@@ -150,9 +181,16 @@ fn test_withdraw_to_bank_invalid_status() {
     let oracle_pk = BytesN::from_array(&env, &[0u8; 32]);
     let contract_id = env.register(TimeLockContract, ());
     let client = TimeLockContractClient::new(&env, &contract_id);
-    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env));
+    
+    let usdc_address = env.register_stellar_asset_contract_v2(Address::generate(&env)).address();
+    client.initialize(&Address::generate(&env), &oracle_pk, &Address::generate(&env), &usdc_address);
 
-    let gift_id = client.create_gift(&Address::generate(&env), &10_000_000, &0, &String::from_str(&env, "h"));
+    let sender = Address::generate(&env);
+    let amount = 10_000_000;
+    soroban_sdk::token::StellarAssetClient::new(&env, &usdc_address).mint(&sender, &amount);
+    soroban_sdk::token::Client::new(&env, &usdc_address).approve(&sender, &contract_id, &amount, &(env.ledger().sequence() + 100));
+
+    let gift_id = client.create_gift(&sender, &amount, &0, &String::from_str(&env, "h"));
     let res = client.try_withdraw_to_bank(&gift_id, &String::from_str(&env, "h"), &Address::generate(&env));
     assert!(res.is_err());
 }

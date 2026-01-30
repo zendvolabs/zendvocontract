@@ -18,4 +18,8 @@ pub enum Error {
     InvalidSlippageConfig = 12,
     OraclePaused = 13,
     InsufficientLiquidity = 14,
+    InsufficientFunds = 15,
+    InsufficientAllowance = 16,
+    InvalidTokenAddress = 17,
+    TransferFailed = 18,
 }

@@ -18,14 +18,6 @@ pub struct SlippageConfigUpdated {
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SlippageCheckFailed {
-    pub expected_rate: i128,
-    pub actual_rate: i128,
-    pub threshold: u32,
-}
-
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OracleAddressUpdated {
     pub old_address: Address,
     pub new_address: Address,
@@ -62,8 +54,3 @@ pub struct FeesCollected {
     pub gift_id: u64,
     pub fee_amount_usdc: i128,
 }
-
-pub const EVENT_ORACLE_RATE_QUERIED: &[u8] = b"OracleRateQueried";
-pub const EVENT_SLIPPAGE_CONFIG_UPDATED: &[u8] = b"SlippageConfigUpdated";
-pub const EVENT_SLIPPAGE_CHECK_FAILED: &[u8] = b"SlippageCheckFailed";
-pub const EVENT_ORACLE_ADDRESS_UPDATED: &[u8] = b"OracleAddressUpdated";
