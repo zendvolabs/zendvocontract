@@ -1,10 +1,18 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, contracttype, token, Bytes, Env, Address, BytesN, Symbol};
 
-mod types;
-mod errors;
 mod constants;
+mod contract;
+pub mod errors;
+pub mod events;
+pub mod interface;
+mod oracle;
+mod path_payment;
+mod slippage;
+mod storage;
+mod token;
 mod test;
+pub mod types;
 
 use types::{Gift, GiftStatus};
 use errors::Error;
@@ -88,3 +96,6 @@ impl TimeLockContract {
             .ok_or(Error::GiftNotFound)
     }
 }
+pub use contract::TimeLockContract;
+pub use contract::TimeLockContractClient;
+pub use interface::TimeLockTrait;

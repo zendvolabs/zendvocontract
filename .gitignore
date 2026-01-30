@@ -4,3 +4,9 @@ target
 # Local settings
 .soroban
 .stellar
+target/
+**/*.rs.bk
+.DS_Store
+.idea/
+.vscode/
+*.swp

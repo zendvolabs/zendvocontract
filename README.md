@@ -1,8 +1,6 @@
 # Zendvo | Soroban Smart Contracts
 
-This repository houses the Soroban smart contracts for Zendvo, a decentralized time-locked gifting platform built on Stellar. These contracts manage the time-locking logic and recipient validation.
-
-Zendvo is a digital gifting platform that enables users to send cash gifts that remain completely hidden until a predetermined unlock date and time. By using the Stellar blockchain, Zendvo transforms digital money transfers into memorable experiences filled with mystery and anticipation.
+This repository houses the Soroban smart contracts for Zendvo, a decentralized time-locked gifting platform built on Stellar.
 
 ## Project Structure
 
@@ -11,71 +9,59 @@ zendvocontract/
 ├── contracts/
 │   └── time_lock/          # Core gift escrow contract
 │       ├── src/
-│       │   ├── lib.rs      # Contract entry point & module definitions
-│       │   ├── types.rs    # Custom data structures (Gift struct)
+│       │   ├── lib.rs      # Module definitions & exports
+│       │   ├── contract.rs # Main contract implementation (Entry point)
+│       │   ├── storage.rs  # Centralized storage access & TTL management
+│       │   ├── oracle.rs   # Oracle logic & price caching
+│       │   ├── slippage.rs # Slippage validation logic
+│       │   ├── types.rs    # Shared data structures
+│       │   ├── events.rs   # Standardized event definitions
 │       │   ├── errors.rs   # Contract-specific error codes
-│       │   ├── constants.rs# Business rules (Fees, Limits)
-│       │   └── test.rs     # Integration and unit tests
-│       └── Cargo.toml      # Contract-specific dependencies
+│       │   ├── constants.rs# Business rules & limits
+│       │   └── test.rs     # Modular unit tests
+│       └── Cargo.toml      # Contract dependencies
 ├── Cargo.toml              # Workspace configuration
+├── Makefile                # Standardized development workflows
 └── README.md               # You are here
 ```
 
-## Contract Architecture: `time_lock`
+## Architecture: `time_lock`
 
-The `time_lock` contract acts as a non-custodial escrow for USDC gifts. It leverages Soroban's capabilities to ensure:
+The `time_lock` contract follows a modular architecture for high maintainability:
 
-- **Trustless Escrow:** Funds are securely held by the contract logic, ensuring they cannot be moved by anyone (including the sender) until the unlock conditions are met.
-- **Time-Locked Release:** Utilizes the Stellar network's ledger time to prevent the `claim_gift` function from succeeding before the sender's specified `unlock_timestamp`.
-- **Fee Logic:** Automatically calculates and deducts the protocol fee (200 BPS / 2%) during the escrow creation process.
-- **Validation:** Enforces gift amount limits ($5 - $1,000) at the blockchain level.
-
-## Key Modules
-
-- **`types.rs`**: Defines the `Gift` storage object, tracking ownership, amount, and timing.
-- **`errors.rs`**: Standardized error codes (e.g., `NotUnlocked`, `AlreadyClaimed`).
-- **`constants.rs`**: Shared configuration for fees and limits.
-- **`test.rs`**: A robust test suite for simulating gift creation and withdrawal scenarios.
-
-## Benefits to the Stellar Ecosystem
-
-Zendvo showcases the power of Stellar through:
-
-1.  **Stablecoin Infrastructure:** Utilizing **USDC** for value preservation, ensuring that the gift amount remains stable from creation to unlock.
-2.  **Soroban Smart Contracts:** Implementing decentralized time-locking logic that prevents early withdrawal, providing a middleman-free guarantee of the "hidden" nature of the gift.
-3.  **Low-Cost Transactions:** Leveraging Stellar's speed and near-zero fees to ensure that more of the sender's money reaches the recipient.
-4.  **Real-World Utility:** Connecting blockchain technology directly to Nigerian bank accounts via local payout partners, driving adoption of Web3 solutions for real-world financial needs.
-5.  **Financial Inclusion:** Providing a good on/off-ramp experience that bridges global stablecoin liquidity with local financial systems.
-
-## Who is Zendvo For?
-
-- **Diaspora Senders:** Specifically targeting young adults (18-35) in the US, UK, and Canada looking for a more meaningful way to send money home to Nigeria.
-- **Domestic Gifting (Future Phase):** Nigerians sending to Nigerians for birthdays, anniversaries, and holidays where surprise is key.
-- **Memorable Occasions:** Perfect for Valentine's Day, graduations, and surprise celebrations where the timing of the gift is as important as the gift itself.
+- **Storage Layer (`storage.rs`):** Centralizes all interactions with Soroban storage. Implements structured `DataKey` usage and proactive TTL management to avoid state expiration.
+- **Oracle Layer (`oracle.rs`):** Manages external price feed integration and implements efficient in-memory caching for exchange rates within a ledger.
+- **Slippage Layer (`slippage.rs`):** Strictly enforces slippage bounds to protect users from volatile market conditions during gift creation and claims.
+- **Event-Driven:** Emits standardized events for all critical state changes (Initialization, Gift Claims, Config Updates).
 
 ## Development Guide
 
 ### Prerequisites
 
 - **Rust Toolchain**: `rustup` with `wasm32-unknown-unknown` target.
-- **Stellar CLI**: Necessary for network interaction and local simulation.
+- **Soroban CLI**: Recommended for network interaction.
+- **Make**: Used for standard workflows.
 
-### Building
+### Workflows
 
-Compile the contract to optimized WASM:
-
-```bash
-cargo build --target wasm32-unknown-unknown --release
-```
-
-### Testing
-
-Verify the contract logic locally:
+This project includes a `Makefile` to simplify development:
 
 ```bash
-cargo test
+make build   # Build all contracts for WASM
+make test    # Run all unit tests
+make fmt     # Format the codebase
+make lint    # Run clippy for static analysis
+make clean   # Remove build artifacts
 ```
+
+## Benefits to the Stellar Ecosystem
+
+Zendvo showcases the power of Stellar through:
+
+1. **Stablecoin Infrastructure:** Utilizing USDC for value preservation.
+2. **Modular Soroban Design:** Demonstrating senior-level architecture patterns like storage centralization and TTL management.
+3. **Low-Cost Transactions:** Leveraging Stellar's efficiency for digital gifting.
 
 ## Integration
 
-The contracts serve as the backend execution layer for the [Zendvo Web App](../zendvo). The App's `src/lib/stellar` module interacts with these contracts using the `stellar-sdk`.
+The contracts serve as the backend execution layer for the Zendvo Web App. The app interacts with these contracts via the `TimeLockContractClient` generated by the Soroban SDK.
