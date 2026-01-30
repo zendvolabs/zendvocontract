@@ -9,6 +9,14 @@ pub enum GiftStatus {
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub enum GiftStatus {
+    Created,
+    Claimed,
+    Unlocked,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Gift {
     pub sender: Address,
     pub recipient: Option<Address>,
