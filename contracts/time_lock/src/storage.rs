@@ -1,7 +1,7 @@
 use crate::oracle::OracleConfig;
 use crate::slippage::SlippageConfig;
 use crate::types::{Gift, PriceCache};
-use soroban_sdk::{contracttype, Address, BytesN, Env};
+use soroban_sdk::{contracttype, Address, BytesN, Env, String};
 
 const DAY_IN_LEDGERS: u32 = 17280;
 const INSTANCE_BUMP_AMOUNT: u32 = 7 * DAY_IN_LEDGERS;
@@ -21,6 +21,7 @@ pub enum DataKey {
     TotalHeld,
     TotalGifted,
     TotalFees,
+    PaymentReference(String),
 }
 
 pub fn extend_instance_ttl(env: &Env) {
@@ -140,4 +141,24 @@ pub fn get_total_fees(env: &Env) -> i128 {
 pub fn set_total_fees(env: &Env, amount: i128) {
     env.storage().instance().set(&DataKey::TotalFees, &amount);
     extend_instance_ttl(env);
+}
+
+// Payment Reference tracking
+pub fn get_payment_reference_gift_id(env: &Env, payment_ref: &String) -> Option<u64> {
+    env.storage()
+        .instance()
+        .get(&DataKey::PaymentReference(payment_ref.clone()))
+}
+
+pub fn set_payment_reference_gift_id(env: &Env, payment_ref: &String, gift_id: u64) {
+    env.storage()
+        .instance()
+        .set(&DataKey::PaymentReference(payment_ref.clone()), &gift_id);
+    extend_instance_ttl(env);
+}
+
+pub fn has_payment_reference(env: &Env, payment_ref: &String) -> bool {
+    env.storage()
+        .instance()
+        .has(&DataKey::PaymentReference(payment_ref.clone()))
 }

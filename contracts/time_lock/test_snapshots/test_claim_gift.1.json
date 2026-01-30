@@ -129,7 +129,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "5cff9e04fcb2ed1d7a934be70bb8dae899b2aa6eca59359edf1b681f7be4a6fbf2de982eee54b62eea14cde9ad467bef5702ac6ec8492ee87d754cf0ab5a6a0d"
+                  "bytes": "dc7e25bc93896eabe5233e339107ec29225ffe0535337138890808cd829b3f07dd21267b8052a2e306f485bfb583ab11640c2277ecfc6251560fe3a2fa70f103"
                 }
               ]
             }
@@ -298,7 +298,11 @@
                                 "symbol": "status"
                               },
                               "val": {
-                                "u32": 1
+                                "vec": [
+                                  {
+                                    "symbol": "Claimed"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -333,7 +337,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "babbbaebc421158ed35c796078e5c33349a4cc6489e77867c423905797c064ec"
+                          "bytes": "98506d499bafb405b87b0e1c2b132da4e29e03e806a79350859cae760591a4c1"
                         }
                       },
                       {

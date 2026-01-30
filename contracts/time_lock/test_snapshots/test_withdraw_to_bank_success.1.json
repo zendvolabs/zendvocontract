@@ -128,7 +128,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "06b3bdf8621f41e52459a451e2acb7b20e5bd9b51c23288089885396ef36f53e21ff19035312df4495cb8c77d382e47556d0a92e56d30bf590bdfe18d0d03b0c"
+                  "bytes": "16248d64f9542e318e6d10903907d210c4c86dc0e26dcfa6a16ed9b8ed2d8d050a019e33352b33d2317b016d4c4c79550cca0561a5c005de5974fc3350b51404"
                 }
               ]
             }
@@ -324,7 +324,11 @@
                                 "symbol": "status"
                               },
                               "val": {
-                                "u32": 2
+                                "vec": [
+                                  {
+                                    "symbol": "Withdrawn"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -359,7 +363,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "2d5728806caa6ae4da6b1effd724422e0e0f7164e45bcdbcca0e70881247251b"
+                          "bytes": "e8db908b0e3326bd3419f05836ab0242e27659841c06548f19e8cba5d0e01f58"
                         }
                       },
                       {

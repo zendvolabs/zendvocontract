@@ -1,8 +1,8 @@
 use crate::constants;
 use crate::errors::Error;
 use crate::events::{
-    AnchorDepositSent, BankWithdrawalInitiated, FeesCollected, OracleAddressUpdated,
-    OracleRateQueried, PathPaymentExecuted, SlippageConfigUpdated,
+    AnchorDepositSent, BankWithdrawalInitiated, DepositGiftCreated, FeesCollected,
+    OracleAddressUpdated, OracleRateQueried, PathPaymentExecuted, SlippageConfigUpdated,
 };
 use crate::oracle::{self, OracleConfig};
 use crate::path_payment;
@@ -336,5 +336,126 @@ impl TimeLockTrait for TimeLockContract {
 
     fn get_total_fees(env: Env) -> Result<i128, Error> {
         Ok(storage::get_total_fees(&env))
+    }
+
+    /// Creates a gift from a verified USDC deposit (oracle-only).
+    ///
+    /// This function is called by the backend oracle after:
+    /// 1. User completes Stripe payment (fiat)
+    /// 2. Backend confirms payment and triggers Anchor
+    /// 3. Anchor transfers USDC to the contract address
+    ///
+    /// # Trust Model
+    /// The oracle is trusted to only call this function after confirming:
+    /// - Stripe payment was successful
+    /// - Anchor has deposited the corresponding USDC to the contract
+    /// The contract does not verify actual USDC balance - internal accounting
+    /// mirrors the expected state based on oracle attestations.
+    ///
+    /// # Authorization
+    /// Uses Soroban's native `require_auth()` which verifies the transaction
+    /// was signed by the oracle's private key (Ed25519 signature verification
+    /// at the protocol level).
+    ///
+    /// # Arguments
+    /// * `payment_reference` - Unique Stripe payment intent ID (1-256 chars)
+    /// * `amount` - USDC amount in stroops (6 decimals), must be within bounds
+    /// * `unlock_timestamp` - Unix timestamp when gift becomes claimable
+    /// * `recipient_phone_hash` - SHA-256 hash of recipient's phone number
+    ///
+    /// # Errors
+    /// * `OracleUnavailable` - Oracle not configured
+    /// * `InvalidPaymentReference` - Empty or too long reference
+    /// * `PaymentReferenceUsed` - Reference already processed (prevents double-mint)
+    /// * `InvalidAmount` - Amount outside MIN_GIFT_AMOUNT..MAX_GIFT_AMOUNT
+    /// * `UnlockTimestampTooFar` - Unlock time more than 10 years in future
+    fn deposit_and_create_gift(
+        env: Env,
+        payment_reference: String,
+        amount: i128,
+        unlock_timestamp: u64,
+        recipient_phone_hash: String,
+    ) -> Result<u64, Error> {
+        // Verify caller is the oracle address (Ed25519 signature verification via require_auth)
+        let oracle_config = storage::get_oracle_config(&env).ok_or(Error::OracleUnavailable)?;
+        oracle_config.oracle_address.require_auth();
+
+        // Validate payment reference format
+        let ref_len = payment_reference.len();
+        if ref_len == 0 || ref_len > constants::MAX_PAYMENT_REF_LENGTH {
+            return Err(Error::InvalidPaymentReference);
+        }
+
+        // Check payment reference hasn't been used (prevents double-minting)
+        if storage::has_payment_reference(&env, &payment_reference) {
+            return Err(Error::PaymentReferenceUsed);
+        }
+
+        // Validate amount bounds
+        if amount < constants::MIN_GIFT_AMOUNT || amount > constants::MAX_GIFT_AMOUNT {
+            return Err(Error::InvalidAmount);
+        }
+
+        // Sanity check: prevent obviously incorrect timestamps (e.g., year 2100)
+        let current_time = env.ledger().timestamp();
+        if unlock_timestamp > current_time + constants::MAX_LOCK_DURATION {
+            return Err(Error::UnlockTimestampTooFar);
+        }
+
+        // Create gift with sender = contract address (USDC comes from Anchor)
+        let gift_id = storage::increment_next_gift_id(&env);
+
+        let gift = Gift {
+            sender: env.current_contract_address(),
+            recipient: None,
+            amount,
+            unlock_timestamp,
+            recipient_phone_hash: recipient_phone_hash.clone(),
+            status: GiftStatus::Created,
+        };
+
+        storage::set_gift(&env, gift_id, &gift);
+
+        // Store payment reference -> gift_id mapping
+        storage::set_payment_reference_gift_id(&env, &payment_reference, gift_id);
+
+        // Update internal accounting (USDC already transferred by Anchor)
+        let total_held = storage::get_total_held(&env) + amount;
+        let total_gifted = storage::get_total_gifted(&env) + amount;
+        storage::set_total_held(&env, total_held);
+        storage::set_total_gifted(&env, total_gifted);
+
+        // Emit deposit gift created event
+        env.events().publish(
+            (symbol_short!("dep_gift"),),
+            DepositGiftCreated {
+                gift_id,
+                payment_reference,
+                amount,
+                recipient_phone_hash,
+                unlock_timestamp,
+            },
+        );
+
+        Ok(gift_id)
+    }
+
+    /// Retrieves the gift ID associated with a payment reference.
+    ///
+    /// Allows lookup of gifts created via `deposit_and_create_gift` using
+    /// the original Stripe payment intent ID.
+    ///
+    /// # Arguments
+    /// * `payment_reference` - The Stripe payment intent ID
+    ///
+    /// # Returns
+    /// * `Ok(gift_id)` - The gift ID if found
+    /// * `Err(GiftNotFound)` - If payment reference doesn't exist
+    fn get_gift_by_payment_reference(
+        env: Env,
+        payment_reference: String,
+    ) -> Result<u64, Error> {
+        storage::get_payment_reference_gift_id(&env, &payment_reference)
+            .ok_or(Error::GiftNotFound)
     }
 }

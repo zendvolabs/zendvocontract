@@ -62,4 +62,20 @@ pub trait TimeLockTrait {
 
     /// Internal Tracking: Get accumulated platform fees
     fn get_total_fees(env: Env) -> Result<i128, Error>;
+
+    /// Create gift from USDC deposit (oracle-only)
+    /// Called by backend after Stripe payment confirmation and Anchor USDC deposit
+    fn deposit_and_create_gift(
+        env: Env,
+        payment_reference: String,
+        amount: i128,
+        unlock_timestamp: u64,
+        recipient_phone_hash: String,
+    ) -> Result<u64, Error>;
+
+    /// Get gift ID by payment reference
+    fn get_gift_by_payment_reference(
+        env: Env,
+        payment_reference: String,
+    ) -> Result<u64, Error>;
 }
