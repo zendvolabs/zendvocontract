@@ -3,14 +3,6 @@ use soroban_sdk::{contracttype, Address, String};
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum GiftStatus {
-    Created = 0,
-    Claimed = 1,
-    Withdrawn = 2,
-}
-
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum GiftStatus {
     Created,
     Claimed,
     Unlocked,
