@@ -129,7 +129,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "5cff9e04fcb2ed1d7a934be70bb8dae899b2aa6eca59359edf1b681f7be4a6fbf2de982eee54b62eea14cde9ad467bef5702ac6ec8492ee87d754cf0ab5a6a0d"
+                  "bytes": "4645f94a56c9160282569f095a6f062525bf688c37c74850b093a93c06abf33d5a7c5848e7477cbd00a4a06029fec6eb8ba3ed44c2291d259afbd809d58c4909"
                 }
               ]
             }
@@ -298,7 +298,11 @@
                                 "symbol": "status"
                               },
                               "val": {
-                                "u32": 1
+                                "vec": [
+                                  {
+                                    "symbol": "Unlocked"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -333,7 +337,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "babbbaebc421158ed35c796078e5c33349a4cc6489e77867c423905797c064ec"
+                          "bytes": "f7ceb0428d999371ac4ffb9d0b4cbd4f9c4d239eccd50bdbd0a1ac7fb2b024a2"
                         }
                       },
                       {
