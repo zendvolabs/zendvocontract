@@ -2,7 +2,7 @@ use crate::constants;
 use crate::errors::Error;
 use crate::events::{
     AnchorDepositSent, BankWithdrawalInitiated, FeesCollected, OracleAddressUpdated,
-    OracleRateQueried, PathPaymentExecuted, SlippageConfigUpdated,
+    OracleRateQueried, PathPaymentExecuted, SlippageConfigUpdated, WithdrawalSuccess, FeeWithdrawal,
 };
 use crate::oracle::{self, OracleConfig};
 use crate::path_payment;
@@ -118,7 +118,7 @@ impl TimeLockTrait for TimeLockContract {
             .ed25519_verify(&oracle_pk, &payload, &verification_proof);
 
         gift.recipient = Some(claimant.clone());
-        gift.status = GiftStatus::Claimed;
+        gift.status = GiftStatus::Unlocked;
 
         storage::set_gift(&env, gift_id, &gift);
 
@@ -138,7 +138,7 @@ impl TimeLockTrait for TimeLockContract {
     ) -> Result<(), Error> {
         let mut gift = storage::get_gift(&env, gift_id).ok_or(Error::GiftNotFound)?;
 
-        if gift.status != GiftStatus::Claimed {
+        if gift.status != GiftStatus::Unlocked {
             return Err(Error::InvalidStatus);
         }
 
@@ -174,7 +174,7 @@ impl TimeLockTrait for TimeLockContract {
 
         let path = path_payment::discover_optimal_path(
             &env,
-            &recipient.clone(), 
+            &recipient.clone(),
             &anchor_address,
             amount_after_fee,
         )?;
@@ -214,11 +214,92 @@ impl TimeLockTrait for TimeLockContract {
         storage::set_total_fees(&env, total_fees);
 
         // Note: total_held doesn't change yet as the contract still holds the USDC
-        // until it's actually swapped/sent. 
+        // until it's actually swapped/sent.
         // In this implementation, withdraw_to_bank simulates the swap.
         // For strict tracking, we decrease total_held by the full gift amount.
         let total_held = storage::get_total_held(&env) - gift.amount;
         storage::set_total_held(&env, total_held);
+
+        Ok(())
+    }
+
+    fn withdraw_gift(
+        env: Env,
+        gift_id: u64,
+    ) -> Result<(), Error> {
+        let mut gift = storage::get_gift(&env, gift_id).ok_or(Error::GiftNotFound)?;
+
+        if gift.status != GiftStatus::Unlocked {
+            return Err(Error::InvalidStatus);
+        }
+
+        let recipient = gift.recipient.as_ref().ok_or(Error::Unauthorized)?;
+        recipient.require_auth();
+
+        let fee_amount = (gift.amount * constants::GIFT_FEE_BPS as i128) / 10000;
+        let amount_after_fee = gift.amount - fee_amount;
+
+        // Internal Tracking: Collect Platform Fee
+        let total_fees = storage::get_total_fees(&env) + fee_amount;
+        storage::set_total_fees(&env, total_fees);
+
+        // Update internal accounting: Decrease total_held by the full gift amount
+        let total_held = storage::get_total_held(&env) - gift.amount;
+        storage::set_total_held(&env, total_held);
+
+        // Events
+        env.events().publish(
+            (symbol_short!("fee_coll"),),
+            FeesCollected {
+                gift_id,
+                fee_amount_usdc: fee_amount,
+            },
+        );
+
+        env.events().publish(
+            (symbol_short!("withdr_s"),),
+            WithdrawalSuccess {
+                gift_id,
+                recipient: recipient.clone(),
+                amount_withdrawn: amount_after_fee,
+                timestamp: env.ledger().timestamp(),
+            },
+        );
+
+        // Transfer USDC to recipient
+        let usdc_address = storage::get_usdc_address(&env).ok_or(Error::InvalidTokenAddress)?;
+        token::transfer(&env, &usdc_address, recipient, amount_after_fee)?;
+
+        gift.status = GiftStatus::Withdrawn;
+        storage::set_gift(&env, gift_id, &gift);
+
+        Ok(())
+    }
+
+    fn withdraw_accumulated_fees(
+        env: Env,
+        to: Address,
+    ) -> Result<(), Error> {
+        let admin = storage::get_admin(&env).ok_or(Error::Unauthorized)?;
+        admin.require_auth();
+
+        let total_fees = storage::get_total_fees(&env);
+        if total_fees == 0 {
+             return Ok(());
+        }
+
+        let usdc_address = storage::get_usdc_address(&env).ok_or(Error::InvalidTokenAddress)?;
+        token::transfer(&env, &usdc_address, &to, total_fees)?;
+
+        storage::set_total_fees(&env, 0);
+
+         env.events().publish(
+            (symbol_short!("fee_wdr"),),
+            FeeWithdrawal {
+                total_fees,
+                to,
+            },
+        );
 
         Ok(())
     }
