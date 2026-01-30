@@ -6,6 +6,7 @@ pub enum GiftStatus {
     Created,
     Claimed,
     Unlocked,
+    Withdrawn,
 }
 
 #[contracttype]
