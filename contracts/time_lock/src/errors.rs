@@ -8,6 +8,7 @@ pub enum Error {
     AlreadyClaimed = 2,
     InvalidAmount = 3,
     Unauthorized = 4,
+    
     GiftNotFound = 5,
     InvalidStatus = 6,
     InvalidProof = 7,
@@ -25,4 +26,5 @@ pub enum Error {
     PaymentReferenceUsed = 19,
     InvalidPaymentReference = 20,
     UnlockTimestampTooFar = 21,
+  InvalidUnlockTime = 22,
 }

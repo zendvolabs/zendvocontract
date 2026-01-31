@@ -103,7 +103,7 @@
                   "u64": 100
                 },
                 {
-                  "string": "phone_hash"
+                  "bytes": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
                 }
               ]
             }
@@ -282,7 +282,7 @@
                                 "symbol": "recipient_phone_hash"
                               },
                               "val": {
-                                "string": "phone_hash"
+                                "bytes": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
                               }
                             },
                             {

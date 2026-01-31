@@ -12,7 +12,7 @@ use crate::storage;
 use crate::token;
 use crate::types::{Gift, GiftStatus};
 use soroban_sdk::{
-    contract, contractimpl, symbol_short, xdr::ToXdr, Address, Bytes, BytesN, Env, String,
+    contract, contractimpl, symbol_short, xdr::ToXdr, Address, Bytes, BytesN, Env, String, Symbol,
 };
 
 #[contract]
@@ -53,12 +53,17 @@ impl TimeLockTrait for TimeLockContract {
         sender: Address,
         amount: i128,
         unlock_timestamp: u64,
-        recipient_phone_hash: String,
+        recipient_phone_hash: BytesN<32>,
     ) -> Result<u64, Error> {
         sender.require_auth();
 
         if amount < constants::MIN_GIFT_AMOUNT || amount > constants::MAX_GIFT_AMOUNT {
             return Err(Error::InvalidAmount);
+        }
+
+        let current_time = env.ledger().timestamp();
+        if unlock_timestamp <= current_time {
+            return Err(Error::InvalidUnlockTime);
         }
 
         let gift_id = storage::increment_next_gift_id(&env);
@@ -68,7 +73,7 @@ impl TimeLockTrait for TimeLockContract {
             recipient: None,
             amount,
             unlock_timestamp,
-            recipient_phone_hash,
+            recipient_phone_hash: recipient_phone_hash.clone(),
             status: GiftStatus::Created,
         };
 
@@ -89,6 +94,17 @@ impl TimeLockTrait for TimeLockContract {
         let total_gifted = storage::get_total_gifted(&env) + amount;
         storage::set_total_held(&env, total_held);
         storage::set_total_gifted(&env, total_gifted);
+
+        env.events().publish(
+            (Symbol::new(&env, "gift_created"),),
+            GiftCreated {
+                gift_id,
+                sender,
+                amount,
+                unlock_time: unlock_timestamp,
+                recipient_hash: recipient_phone_hash,
+            },
+        );
 
         Ok(gift_id)
     }

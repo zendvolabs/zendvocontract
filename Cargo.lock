@@ -209,9 +209,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.54"
+version = "1.2.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6354c81bbfd62d9cfa9cb3c773c2b7b2a3a482d569de977fd0e961f6e7c00583"
+checksum = "47b26a0954ae34af09b50f0de26458fa95369a0d478d8236d3f93082b219bd29"
 dependencies = [
  "find-msvc-tools",
  "shlex",
@@ -566,9 +566,9 @@ checksum = "28dea519a9695b9977216879a3ebfddf92f1c08c05d984f8996aecd6ecdc811d"
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8591b0bcc8a98a64310a2fae1bb3e9b8564dd10e381e6e28010fde8e8e8568db"
+checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
 
 [[package]]
 name = "fnv"
@@ -658,9 +658,9 @@ dependencies = [
 
 [[package]]
 name = "iana-time-zone"
-version = "0.1.64"
+version = "0.1.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33e57f83510bb73707521ebaffa789ec8caf86f9657cad665b092b581d40e9fb"
+checksum = "e31bc9ad994ba00e440a8aa5c9ef0ec67d5cb5e5cb0cc7f8b744a35b389cc470"
 dependencies = [
  "android_system_properties",
  "core-foundation-sys",
@@ -1245,9 +1245,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-ledger-snapshot"
-version = "22.0.8"
+version = "22.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2826e2c9d364edbb2ea112dc861077c74557bdad0a7a00487969088c7c648169"
+checksum = "801272da800bd000bd44c4d9d99f73e36e756b5f646a355c062efc33425c7119"
 dependencies = [
  "serde",
  "serde_json",
@@ -1259,9 +1259,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-sdk"
-version = "22.0.8"
+version = "22.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7ac27d7573e62b745513fa1be8dab7a09b9676a7f39db97164f1d458a344749"
+checksum = "062ec196246f0ad2429ae256b9387efc6c84dfc26ab409c20f8c8d4b7da3cd1c"
 dependencies = [
  "arbitrary",
  "bytes-lit",
@@ -1281,9 +1281,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-sdk-macros"
-version = "22.0.8"
+version = "22.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ef0d7d62b2584696d306b8766728971c7d0731a03a5e047f1fc68722ac8cf0c"
+checksum = "562372e2806f3d4fe450c7d1a8d8b79140c60494969812089bb6e36f66050ffe"
 dependencies = [
  "crate-git-revision",
  "darling 0.20.11",
@@ -1301,9 +1301,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-spec"
-version = "22.0.8"
+version = "22.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4ad0867aec99770ed614fedbec7ac4591791df162ff9e548ab7ebd07cd23a9c"
+checksum = "14311180c5678a5bf1b7b13c414784ceb4551b1caf70c1293a720910bd1df81b"
 dependencies = [
  "base64 0.13.1",
  "stellar-xdr",
@@ -1313,9 +1313,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-spec-rust"
-version = "22.0.8"
+version = "22.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aebe31c042adfa2885ec47b67b08fcead8707da80a3fe737eaf2a9ae1a8cfdc3"
+checksum = "40a8a990c2d455cf5ab65f8156ff0145c9dbb4b0f5ba38c3da1fd69ee5abc2f7"
 dependencies = [
  "prettyplease",
  "proc-macro2",
@@ -1650,18 +1650,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.34"
+version = "0.8.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71ddd76bcebeed25db614f82bf31a9f4222d3fbba300e6fb6c00afa26cbd4d9d"
+checksum = "7456cf00f0685ad319c5b1693f291a650eaf345e941d082fc4e03df8a03996ac"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.34"
+version = "0.8.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8187381b52e32220d50b255276aa16a084ec0a9017a0ca2152a1f55c539758d"
+checksum = "1328722bbf2115db7e19d69ebcc15e795719e2d66b60827c6a69a117365e37a0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1690,6 +1690,6 @@ dependencies = [
 
 [[package]]
 name = "zmij"
-version = "1.0.17"
+version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02aae0f83f69aafc94776e879363e9771d7ecbffe2c7fbb6c14c5e00dfe88439"
+checksum = "1966f8ac2c1f76987d69a74d0e0f929241c10e78136434e3be70ff7f58f64214"

@@ -1,4 +1,14 @@
-use soroban_sdk::{contracttype, Address, String};
+use soroban_sdk::{contracttype, Address, String, BytesN};
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GiftCreated {
+    pub gift_id: u64,
+    pub sender: Address,
+    pub amount: i128,
+    pub unlock_time: u64,
+    pub recipient_hash: BytesN<32>,
+}
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]

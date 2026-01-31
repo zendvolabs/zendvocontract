@@ -100,10 +100,10 @@
                   }
                 },
                 {
-                  "u64": 0
+                  "u64": 100
                 },
                 {
-                  "string": "h"
+                  "bytes": "0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
                 }
               ]
             }
@@ -255,7 +255,7 @@
                                 "symbol": "recipient_phone_hash"
                               },
                               "val": {
-                                "string": "h"
+                                "bytes": "0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
                               }
                             },
                             {
@@ -283,7 +283,7 @@
                                 "symbol": "unlock_timestamp"
                               },
                               "val": {
-                                "u64": 0
+                                "u64": 100
                               }
                             }
                           ]
