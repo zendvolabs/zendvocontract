@@ -23,6 +23,8 @@ pub enum Error {
     InsufficientAllowance = 16,
     InvalidTokenAddress = 17,
     TransferFailed = 18,
-  
-    InvalidUnlockTime = 19,
+    PaymentReferenceUsed = 19,
+    InvalidPaymentReference = 20,
+    UnlockTimestampTooFar = 21,
+  InvalidUnlockTime = 22,
 }
