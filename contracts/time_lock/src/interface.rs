@@ -62,4 +62,16 @@ pub trait TimeLockTrait {
 
     /// Internal Tracking: Get accumulated platform fees
     fn get_total_fees(env: Env) -> Result<i128, Error>;
+
+    /// Withdraw unlocked gift to recipient
+    fn withdraw_gift(
+        env: Env,
+        gift_id: u64,
+    ) -> Result<(), Error>;
+
+    /// Admin: Withdraw accumulated fees
+    fn withdraw_accumulated_fees(
+        env: Env,
+        to: Address,
+    ) -> Result<(), Error>;
 }

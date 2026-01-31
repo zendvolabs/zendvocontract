@@ -54,3 +54,19 @@ pub struct FeesCollected {
     pub gift_id: u64,
     pub fee_amount_usdc: i128,
 }
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WithdrawalSuccess {
+    pub gift_id: u64,
+    pub recipient: Address,
+    pub amount_withdrawn: i128,
+    pub timestamp: u64,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FeeWithdrawal {
+    pub total_fees: i128,
+    pub to: Address,
+}
