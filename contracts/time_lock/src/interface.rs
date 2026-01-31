@@ -74,8 +74,10 @@ pub trait TimeLockTrait {
     ) -> Result<u64, Error>;
 
     /// Get gift ID by payment reference
-    fn get_gift_by_payment_reference(
-        env: Env,
-        payment_reference: String,
-    ) -> Result<u64, Error>;
+    fn get_gift_by_payment_reference(env: Env, payment_reference: String) -> Result<u64, Error>;
+    /// Withdraw unlocked gift to recipient
+    fn withdraw_gift(env: Env, gift_id: u64) -> Result<(), Error>;
+
+    /// Admin: Withdraw accumulated fees
+    fn withdraw_accumulated_fees(env: Env, to: Address) -> Result<(), Error>;
 }
