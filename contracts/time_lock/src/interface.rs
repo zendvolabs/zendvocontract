@@ -19,7 +19,7 @@ pub trait TimeLockTrait {
         sender: Address,
         amount: i128,
         unlock_timestamp: u64,
-        recipient_phone_hash: String,
+        recipient_phone_hash: BytesN<32>,
     ) -> Result<u64, Error>;
 
     fn claim_gift(

@@ -100,10 +100,10 @@
                   }
                 },
                 {
-                  "u64": 0
+                  "u64": 100
                 },
                 {
-                  "string": "h"
+                  "bytes": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
                 }
               ]
             }
@@ -128,7 +128,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "86e6cc986067da62416dc310073f7f7b74c0a0fcf62f0926159b586cc895cd1ee8e43962523119a501c640eb0c3c1003774b0213922797de6ae6c18b44d5ae08"
+                  "bytes": "27de5b6c5f98401064c964c7f3e090e96762de36a18f84ac0750b6d5194b832d82e6dddba65eb3667b2c3500a05c67b765260b8412cad8834b0ce3425bc0fe09"
                 }
               ]
             }
@@ -168,7 +168,7 @@
   "ledger": {
     "protocol_version": 22,
     "sequence_number": 0,
-    "timestamp": 0,
+    "timestamp": 101,
     "network_id": "0000000000000000000000000000000000000000000000000000000000000000",
     "base_reserve": 0,
     "min_persistent_entry_ttl": 4096,
@@ -308,7 +308,7 @@
                                 "symbol": "recipient_phone_hash"
                               },
                               "val": {
-                                "string": "h"
+                                "bytes": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
                               }
                             },
                             {
@@ -336,7 +336,7 @@
                                 "symbol": "unlock_timestamp"
                               },
                               "val": {
-                                "u64": 0
+                                "u64": 100
                               }
                             }
                           ]
@@ -363,7 +363,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "f4ad2697fb81eb5d559727500b5280b6c9a7b2093d3c7ff1033f81c02bf115e6"
+                          "bytes": "280396a33566bf04914a0825dd8336e466aa7a3a45303e2e2c5523db835ec16b"
                         }
                       },
                       {
@@ -429,7 +429,7 @@
                                 "symbol": "timestamp"
                               },
                               "val": {
-                                "u64": 0
+                                "u64": 101
                               }
                             }
                           ]

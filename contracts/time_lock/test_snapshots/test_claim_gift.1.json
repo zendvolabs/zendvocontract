@@ -103,7 +103,7 @@
                   "u64": 100
                 },
                 {
-                  "string": "phone_hash"
+                  "bytes": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
                 }
               ]
             }
@@ -129,7 +129,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "4645f94a56c9160282569f095a6f062525bf688c37c74850b093a93c06abf33d5a7c5848e7477cbd00a4a06029fec6eb8ba3ed44c2291d259afbd809d58c4909"
+                  "bytes": "89b8e2ffd6e2a1a54dcc6780e43c280793334a0b3ba18cc1b7bdcbf45c6f7127a85a14a0564b255ff496de2d3d0d7b0d38b5529ee20703d36b3c187279e42102"
                 }
               ]
             }
@@ -282,7 +282,7 @@
                                 "symbol": "recipient_phone_hash"
                               },
                               "val": {
-                                "string": "phone_hash"
+                                "bytes": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
                               }
                             },
                             {
@@ -337,7 +337,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "f7ceb0428d999371ac4ffb9d0b4cbd4f9c4d239eccd50bdbd0a1ac7fb2b024a2"
+                          "bytes": "7c9d58f32340168fa1ff73aeda9b12342cd4477b3d621fd46a8eb8ad782c420d"
                         }
                       },
                       {

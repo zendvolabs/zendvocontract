@@ -25,6 +25,4 @@ pub enum Error {
     TransferFailed = 18,
   
     InvalidUnlockTime = 19,
-    GiftNotFound = 20,
-    TransferFailed = 21,
 }

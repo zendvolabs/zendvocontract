@@ -119,10 +119,10 @@
                   }
                 },
                 {
-                  "u64": 0
+                  "u64": 100
                 },
                 {
-                  "string": "h"
+                  "bytes": "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
                 }
               ]
             }
@@ -147,7 +147,7 @@
                   "u64": 1
                 },
                 {
-                  "bytes": "b32e90c26a30d1033e0b65f800393145fa78c894f987cd7c5b611c47c8d9fbee736d205c659e8556c2da4dde3093cd5fa2484f947ffd0f8678831263b007220b"
+                  "bytes": "f7a0472fee1e0871abb33ea906d91e0686b577d75279984c034abd853a2d02c61b596b3c7b802802ea7932a8e16e857b6588b1caf16517dc510dc24af7b62f00"
                 }
               ]
             }
@@ -161,7 +161,7 @@
   "ledger": {
     "protocol_version": 22,
     "sequence_number": 0,
-    "timestamp": 0,
+    "timestamp": 101,
     "network_id": "0000000000000000000000000000000000000000000000000000000000000000",
     "base_reserve": 0,
     "min_persistent_entry_ttl": 4096,
@@ -301,7 +301,7 @@
                                 "symbol": "recipient_phone_hash"
                               },
                               "val": {
-                                "string": "h"
+                                "bytes": "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
                               }
                             },
                             {
@@ -329,7 +329,7 @@
                                 "symbol": "unlock_timestamp"
                               },
                               "val": {
-                                "u64": 0
+                                "u64": 100
                               }
                             }
                           ]
@@ -356,7 +356,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "e53ccb48e56e9b124d1b26ee64c53b8bccae7c9ee3e1f593f4ca818ed0a3bf31"
+                          "bytes": "a2a68495eec74e1408a18d598c7168c94d97663c7737813a72c28f8027fc6b94"
                         }
                       },
                       {
