@@ -57,6 +57,16 @@ pub struct FeesCollected {
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DepositGiftCreated {
+    pub gift_id: u64,
+    pub payment_reference: String,
+    pub amount: i128,
+    pub recipient_phone_hash: String,
+    pub unlock_timestamp: u64,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WithdrawalSuccess {
     pub gift_id: u64,
     pub recipient: Address,
