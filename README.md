@@ -1,5 +1,7 @@
 # Zendvo | Soroban Smart Contracts
 
+https://www.zendvo.com/
+
 This repository houses the Soroban smart contracts for Zendvo, a decentralized time-locked gifting platform built on Stellar.
 
 ## Project Structure
